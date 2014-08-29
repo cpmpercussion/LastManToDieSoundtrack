@@ -29,7 +29,7 @@
 	//.states_([["End Scene", Color.black, Color.red],["New Scene", Color.black, Color.green]])
 	.states_([["New Scene", Color.black, Color.red]])
 	.action_({ arg butt;
-		("LMTD	Choosing a new scene - (by button)").postln;
+		("GUI: LMTD	Choosing a new scene - (by button)").postln;
 		~localAddress.sendMsg("/section",9.rand);
 
 		//("BUTTON	State: ").post;
@@ -48,28 +48,28 @@
 ~newSceneTestButton= Button(~lmtdWindow, Rect(230,10,100,25))
 	.states_([["End Scene", Color.yellow, Color.blue]])
 	.action_({ arg butt;
-		("LMTD	Ending a scene - (by button)").postln;
+		("GUI: LMTD	Ending a scene - (by button)").postln;
 		~localAddress.sendMsg("/sectionend");
 	});
 
 ~newSceneTestButton= Button(~lmtdWindow, Rect(340,10,100,25))
 	.states_([["Start Scene 9", Color.blue, Color.red]])
 	.action_({ arg butt;
-		("LMTD	Starting Scene 9 (special)").postln;
+		("GUI: LMTD	Starting Scene 9 (special)").postln;
 		~localAddress.sendMsg("/section",9); // Start the initial section!
 	});
 
 ~stopSoundsButton= Button(~lmtdWindow, Rect(450,10,100,25))
 	.states_([["Stop Sounds", Color.blue, Color.red]])
 	.action_({ arg butt;
-		("Stopping Sounds by button").postln;
+		("GUI: Stopping Sounds by button").postln;
 		~stopSounds.value();
 	});
 
 ~resetCounterButton = Button(~lmtdWindow, Rect(450,45,100,25))
 	.states_([["Reset Scenes", Color.white, Color.green]])
 	.action_({ arg butt;
-		("Reset Scene Counters").postln;
+		("GUI: Reset Scene Counters").postln;
 		~masterDepth = 0;
 		~sectionDepth = [0,0,0,0,0,0,0,0,0,0];
 	});
