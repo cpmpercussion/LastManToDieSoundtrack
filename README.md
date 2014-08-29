@@ -8,3 +8,11 @@ Most of the project relies on around 1GB of audio files which are not included i
 To start the soundtrack (assuming the soundfiles are installed), open the lmtd2010.sc file in SuperCollider, and run the whole file. 
 
 More info at [LMTD's website](http://lastmantodie.net) or [Charles Martin's website](http://charlesmartin.com.au/lmtd/).
+
+## Poster
+
+![Last Man to Die Poster](https://raw.githubusercontent.com/cpmpercussion/LastManToDieSoundtrack/master/img/BRPosterLoRes.jpg)
+
+## Production Image
+
+![Production Image](https://raw.githubusercontent.com/cpmpercussion/LastManToDieSoundtrack/master/img/trainstation.jpg)
