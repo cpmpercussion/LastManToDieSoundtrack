@@ -1,0 +1,108 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf250
+{\fonttbl\f0\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red191\green0\blue0;\red0\green115\blue0;\red0\green0\blue191;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs18 \cf2 //LMTD 2010 Remote Controls\
+\cf0 ~stopSounds.value;\
+~startSounds.value;\
+~startResponders.value;\cf2 \
+\
+\cf0 \
+\cf2 // --- 3 turn sounds off ---\cf0 \
+(\
+\cf2 // Stop the clocks.\cf0 \
+~focusClock.stop;\
+~focusClock.clear;\
+~fieldClock.stop;\
+~fieldClock.clear;\
+\cf2 // Free the synths.\cf0 \
+~fieldPlay1.free;\
+~fieldPlay2.free;\
+~fieldPlay3.free;\
+~fieldPlay4.free;\
+~fieldPlay5.free;\
+~fieldPlay6.free;\
+~voxFlowPlay.free;\
+~voxIrrealityPlay.free;\
+~voxImmortal1Play.free;\
+~voxImmortal2Play.free;\
+~voxBiological1Play.free;\
+~voxBiological2Play.free;\
+~voxBiological3Play.free;\
+\cf2 // Responders\cf0 \
+~sectionResponder.remove;\
+~qrCodeResponder.remove;\
+~arduinoResponder.remove;\
+\
+);\
+\
+\
+\cf2 // Manual Controls.\cf0 \
+~masterCoherence.set(0);\
+~masterCoherence.set(0.2);\
+~masterCoherence.set(0.4);\
+~masterCoherence.set(0.6);\
+~masterCoherence.set(0.8);\
+~masterCoherence.set(0.95);\
+~masterCoherence.set(1);\
+\
+\
+~masterDensity.set(0);\
+~masterDensity.set(0.2);\
+~masterDensity.set(0.4);\
+~masterDensity.set(0.6);\
+~masterDensity.set(0.8);\
+~masterDensity.set(0.95);\
+~masterDensity.set(0.98);\
+~masterDensity.set(1);\
+\cf2 //////\cf0 \
+\cf2 //////\cf0 \
+\
+~voxChooser.value(0);\
+~voxChooser.value(1);\
+~voxChooser.value(2);\
+\
+~voxChooser.value(3);\
+~voxChooser.value(4);\
+~voxChooser.value(5);\
+\
+~voxChooser.value(6);\
+~voxChooser.value(7);\
+~voxChooser.value(8);\
+\
+\cf2 //////\cf0 \
+\
+~masterDepth = 0;\
+~masterDepth = 1;\
+~masterDepth = 2;\
+~masterDepth = 3;\
+~masterDepth = 4;\
+~masterDepth = 5;\
+~masterDepth = 6;\
+~masterDepth = 7;\
+~masterDepth = 8;\
+~masterDepth = 9;\
+~masterDepth = 10;\
+\
+\
+\
+\
+\
+~currentField2.set(\cf3 \\eventTrigger\cf0 ,1);\
+~currentField1.set(\cf3 \\eventTrigger\cf0 ,0);\
+\
+\cf2 // Non robotic Cues;\cf0 \
+	~vibesAPlay = \cf4 Synth\cf0  (\cf3 \\bufferPlayer\cf0 , [\cf3 \\bufnum\cf0 , ~vibesThemeA, \cf3 \\loop\cf0 , 0, \cf3 \\gate\cf0 , 1, \cf3 \\amp\cf0 , 0.8]);\
+	~vibesAPlay.set(\cf3 \\gate\cf0 ,0);\
+	\
+	\
+	~vibesBPlay = \cf4 Synth\cf0  (\cf3 \\bufferPlayer\cf0 , [\cf3 \\bufnum\cf0 , ~vibesThemeB, \cf3 \\loop\cf0 , 1, \cf3 \\gate\cf0 , 1, \cf3 \\amp\cf0 , 0.6, \cf3 \\attack\cf0 , 20, \cf3 \\release\cf0 , 20]);\
+	~vibesBPlay.set(\cf3 \\gate\cf0 ,0);\
+	\
+	~voxCitizenPlay = \cf4 Synth\cf0 (\cf3 \\bufferPlayer\cf0 , [\cf3 \\bufnum\cf0 , ~voxCitizen, \cf3 \\loop\cf0 , 0, \cf3 \\gate\cf0 ,1,\cf3 \\amp\cf0 ,1]);\
+	\
+	\cf2 //arg out = 0, bufnum = 0, loop = 0, amp = 1, gate = 0, attack = 0.05, release = 0.05;\cf0 \
+\
+		}
