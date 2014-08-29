@@ -7,7 +7,6 @@
 ~localAddress = NetAddr.new("127.0.0.1",57120);
 ~lmtdWindow = Window("The Last Man to Die",Rect(600,5,600,150)).front;
 
-
 ~startShowButton= Button(~lmtdWindow, Rect(10,10,100,25))
 	.states_([["Start LMTD", Color.black, Color.green], ["Stop LMTD", Color.black, Color.red] ])
 	.action_({ arg butt;

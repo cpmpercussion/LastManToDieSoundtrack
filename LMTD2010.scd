@@ -36,6 +36,8 @@ s.waitForBoot({(
 // Installation mode - Plays lots more sounds behind each scene to make up for lack of live performers.
 //~installationMode = false;
 ~installationMode = true;
+~sectionChangeScheduling = false;
+
 // Other Performances Vars
 ~buzzingMotors = false;
 ~arduinoSounds = false;
@@ -614,4 +616,22 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 
 //	Load GUI.
 thisProcess.interpreter.executeFile(~mainPath ++ "lmtdGUI.scd");
+
+
+// Section Change Scheduling
+	~sectionChangeScheduling = true;
+
+	~scheduleNextSectionChange = {
+		if (~sectionChangeScheduling,{
+			("Changing Section Chane from Section!").postln;
+			~localAddress.sendMsg("/section",9.rand);
+		},{});
+		("Scheduling next section change...").postln;
+		SystemClock.sched(200, {
+			~scheduleNextSectionChange.value();
+		});
+	};
+
+	if (~sectionChangeScheduling,{~scheduleNextSectionChange.value()},{});
+
 });
