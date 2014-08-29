@@ -4,8 +4,7 @@
 // todo -- add something to pretend to change coherence density movement in installation mode (i.e., when there's no midi input.).
 // todo -- in installation mode, should choose a random scene depth each time. random from 0-4
 // todo -- forward the arduino messages
-
-// otherwise, should work as normal.
+// 28/08/2014 - Updated to eight channel version for Listening Space.
 
 // boot server.
 Server.default = s = Server.local;
@@ -15,45 +14,47 @@ o.numOutputBusChannels = 8;
 o.memSize = 65536*2;
 o.maxNodes = 4096*2;
 //TempoClock.default
+// GUI.cocoa;
 
-GUI.cocoa;
-
-s.waitForBoot({
-
-(
+s.waitForBoot({(
 // Load data
-//
 ~mainPath = thisProcess.nowExecutingPath.dirname ++ "/";
 ~audioPath = ~mainPath ++ "audio/";
 //
-
-// Installation mode?
-// does there need to be an installation mode?
-//
-//~installationMode = false;
-~installationMode = true;
-//
-// Listening Space Mode
-~voxOutput = 4; // addresses lower speakers
-~backgroundOutput = 0; // addresses upper speakers
+// Audio Output Config Listening Space Mode
 ~mainOutput = 0;
 ~mainChannels = 4; // quad at each 2d plane.
+~voxOutput = 4; // addresses lower speakers
+~backgroundOutput = 0; // addresses upper speakers
 
 // Normal Stereo Mode
-/*~voxOutput = 0;
-~backgroundOutput = 0;
-~mainOutput = 0;
-~mainChannels = 2;*/
+// ~voxOutput = 0;
+// ~backgroundOutput = 0;
+// ~mainOutput = 0;
+// ~mainChannels = 2;
 
-//	Load Synthdefs
-thisProcess.interpreter.executeFile(~mainPath ++ "lmtdSynthDefs.scd");
+// Installation mode - Plays lots more sounds behind each scene to make up for lack of live performers.
+//~installationMode = false;
+~installationMode = true;
+// Other Performances Vars
 ~buzzingMotors = false;
 ~arduinoSounds = false;
 
+// -- Master Audio Level Definitions (set low for the Listening Space)
+~masterLevelHigh = 0.4; //1.0
+~masterLevelLow = 0.1;
+~masterLevelMedium = 0.2; //0.85
+~masterLevelVeryLow = 0.03;
+// -- Initial Depth and Section definitions
+~masterDepth = 0;
+~sectionDepth = [0,0,0,0,0,0,0,0,0,0];
+~currentSection = 9;
+//
+
+//	Load Synthdefs
+thisProcess.interpreter.executeFile(~mainPath ++ "lmtdSynthDefs.scd");
 // Load Sounds
 thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
-// All loadSounds code used to be here.
-
 //
 // Control Bus and variable definitions
 //
@@ -72,17 +73,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 ~masterMovement = Bus.control;
 ~masterMovement.set(0.5);
 ~masterMovementVar = 0.5;
-
-// -- Master Level Definitions
-~masterLevelHigh = 0.4; //1.0
-~masterLevelLow = 0.1;
-~masterLevelMedium = 0.3; //0.85
-~masterLevelVeryLow = 0.05;
-// -- Initial Depth and Section definitions
-~masterDepth = 0;
-~sectionDepth = [0,0,0,0,0,0,0,0,0,0];
-~currentSection = 9;
-//
 
 // Global variables for PBinds
 // Patterns for the pBinds.
@@ -111,12 +101,8 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 // Finished loading data
 );
 
-( // load everything else;
-
-//
-//
+( // Load Control Functions.
 //	Stop sounds function
-//
 ~stopSounds = {
 	("LMTD	Stopping Sounds...").postln;
 	// First make sure everything is off
@@ -155,30 +141,20 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 	~arduinoSounds = false;
 };
 
-//
-//
 // start sounds function.
-//	//	//	//	//	//	//	//	//
 ~startSounds = {
 	~masterDepth = 0;
 	~sectionDepth = [0,0,0,0,0,0,0,0,0,0];
 	~currentSection = -1;
-	("LMTD	Loading Sounds...").postln;
+	("LMTD	Starting Sounds...").postln;
 
-	//
 	// Pbinds for Field recordings.
-	//
-	//
 	~fields1= Pbindef(\fields1, \instrument, \bindEnv, \bufnum, ~rField, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5* ~rel, \dur, 20 * ~dur4, \amp, 0.5 * ~masterLevelBus.asMap, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
 	~fields2= Pbindef(\fields2, \instrument, \bindEnv, \bufnum, ~rField, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5*  ~rel, \dur, 20 * ~dur3, \amp, 0.5 * ~masterLevelBus.asMap, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
-	//
 	// Auto improvise pBinds
-	//
 	~marImp1= Pbindef(\marimbaImprov1, \instrument, \bindEnv, \bufnum, ~rMarImprov, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5* ~rel, \dur, 20 * ~dur4, \amp, 0.5 * 1, \bufrate, 1, \pan,~pans, \out, 0);
 	~marImp2= Pbindef(\marimbaImprov2, \instrument, \bindEnv, \bufnum, ~rMarImprov, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5*  ~rel, \dur, 20 * ~dur3, \amp, 0.5 * 1, \bufrate, 1, \pan,~pans, \out, 0);
 
-
-	//
 	// Adjust field recording parameters
 	~fieldParams = {
 		arg coherence, density, movement, level;
@@ -233,10 +209,8 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		~marImp2.stop;
 	};
 
-	//
+
 	// Pbinds for percussion ambient
-	//
-	//
 	// Initial setup for the pBinds
 	~loop1= Pbindef(\loop1, \instrument, \bindEnv, \bufnum, ~vibesLp[0], \startpos, ~starts, \sus, 0.5*~starts, \release, 3*~rel, \dur, 5*~dur4, \amp, 0.2, \bufrate, ~rateLow, \pan,~pans, \out, ~backgroundOutput);
 	~loop2= Pbindef(\loop2, \instrument, \bindEnv, \bufnum, ~vibesLp[0], \startpos, ~starts, \sus, 0.5*~starts, \release, 3*~rel, \dur, 5*~dur3, \amp, 0.2, \bufrate, ~rateMid, \pan,~pans, \out, ~backgroundOutput);
@@ -244,7 +218,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 	~loop4= Pbindef(\loop4, \instrument, \bindEnv, \bufnum, ~marLp[0], \startpos,~starts,\sus, 0.5 * ~starts,\release,3*~rel, \dur, 5*~dur2, \amp, 0.2, \bufrate, ~rateLow,\pan, ~pans, \out, ~backgroundOutput);
 	~loop5= Pbindef(\loop5, \instrument, \bindEnv, \bufnum, ~glockLp[0], \startpos,~starts,\sus, 0.5 * ~starts,\release,3*~rel, \dur, 5*~dur4, \amp, 0.2, \bufrate, ~rateMid, \pan, ~pans, \out, ~backgroundOutput);
 	~loop6= Pbindef(\loop6, \instrument, \bindEnv, \bufnum, ~glockLp[0], \startpos,~starts,\sus, 0.5 * ~starts,\release,3*~rel, \dur, 5*~dur3, \amp, 0.2, \bufrate, ~rateLow, \pan, ~pans, \out, ~backgroundOutput);
-	//
 
 	// Loop Layers
 	~vibLoop = Ppar([~loop1, ~loop2]).play;
@@ -302,7 +275,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 	};
 
 	~loopParams = {arg coherence = 0.8, density = 0.9, movement = 0.6, level = 0.2;
-		//var att = 1, sus = 1, rel = 1;
 		var amp = 0.1; // master level balance for the loops
 		var dur = (25 + (movement * -24));
 		var att = (0.2 + 2 * density) * (1 -  (0.5 * movement));
@@ -341,18 +313,12 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		//("LOOP PARAMETERS: LayerScale" + layerScale).postln;
 	};
 
-
-	//
-	// Pbinds for percussion glitchy
-	//
-
-	//	//	//	//	//	//	//	//	//
-	//
-	//	Load the Script.
+	//	Load the Script (Performance Structure) Functions.
 	thisProcess.interpreter.executeFile(~mainPath ++ "lmtdScript.scd");
 };
 
 
+// OSC Responders
 ~startResponders = {
 	("LMTD	Starting Responders...").postln;
 	//Responders
@@ -373,10 +339,8 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		~localProcessing = NetAddr.new("127.0.0.1",3000);
 		//~localProcessing = NetAddr.new("192.168.1.255", 57120);
 
-	///////////////////	///////////////////	///////////////////
-
 	//
-	// Auto Density and Movement synths (for CCAS show, December 2010)
+	// Auto Density and Movement synths (for CCAS show and installation, December 2010)
 	//
 	~densitySynth.free;
 	~movementSynth.free;
@@ -402,10 +366,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 			0.05.yield;
 		}
 	}.play;
-	// end auto density and movement
-	//
-
-
 
 	//
 	// Section Responder.
@@ -427,7 +387,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		~scriptFunctions[(2 * ~currentSection) + 1].value; // run the old section's end script
 		Routine {
 			// Section chime
-			//var newSection = 5;
 			{
 				var note1 = midicps((2 * newSection) + 60);
 				var note2 = midicps((2 * newSection) + 65);
@@ -454,19 +413,15 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 				"Choosing random section depth... (installation mode): ".post;
 				~sectionDepth[newSection] = 5.rand.postln;
 			});
-
 			~scriptFunctions[(2 * newSection)].value; // run the new section's start script.
 			~currentSection = newSection;	// update vars
-
 			~updateGuiSection.value(); // update GUI
 		}.play;
 
 		});
 	}).add;
 
-	//
 	//Section End Responder
-	//
 	~sectionEndResponder.remove;
 	~sectionEndResponder = OSCresponderNode(nil, '/sectionend', {|t, r, msg|
 		var section = ~currentSection;
@@ -474,7 +429,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		~sectionEndActions[~masterDepth].value;
 
 		// End section chime:
-		//var newSection = 5;
 		{
 			var note1 = midicps((2 * section) + 60);
 			var note2 = midicps((2 * section) + 65);
@@ -490,9 +444,7 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		~localAddress.sendMsg("/section",9.rand);
 	}).add;
 
-	//
 	//	Update Sounds Responder
-	//
 	~updateSoundsResponder.remove;
 	~updateSoundsResponder = OSCresponderNode(nil, '/updatesounds', {|t,r,msg|
 		var coh = if (msg[1].isPositive, msg[1], ~masterCoherenceVar);
@@ -501,7 +453,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		var lev = if (msg[4].isPositive, msg[4], ~masterLevelVar);
 
 		//("UPDATE SOUNDS OSC: " + msg).postln;
-
 		~loopParams.value(coh,den,mov,lev);	// Update loops
 		~fieldParams.value(coh,den,mov,lev);	// Update fields
 		~masterCoherence.set(coh);
@@ -518,19 +469,15 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 				~masterLevelBus.set(lev);
 			});
 			*/
-
 		//if (msg[4].notNil, {
 		//	~masterLevelBus.get({arg value; Synth(\fade,[\bus,~masterLevelBus,\start,value,
 		//		\end,lev,\time,2],addAction: \addToHead);}); // fade master level to new lev.
 		//});
-
 		~masterCoherenceVar = coh;
 		~masterDensityVar = den;
 		~masterMovementVar = mov;
 		~masterLevelVar = lev;
-
-		// Update GUI with new values:
-		~updateGuiCohDenMovLev.value();
+		~updateGuiCohDenMovLev.value();	// Update GUI with new values:
 	}).add;
 
 		~sendUpdatesResponder.remove;
@@ -547,18 +494,14 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 	}).add;
 
 
-	//
 	// QR Code Messages
-	//
 	~qrCodeResponder.remove;
 	~qrCodeResponder = OSCresponderNode(nil, '/qrcode', {|t, r, msg|
 		var newSection = msg[1];
 		("QRCODE:		QrCode:" + newSection).postln;
 	}).add;
 
-	//
 	// Arduino Responder.
-	//
 	(
 	~arduinoResponder.remove;
 	~lastAccel = 0;
@@ -589,7 +532,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 
 	// Arduino pulse responder.
 	// sends ard pulses from other clients to port 3000 on the local machine.
-	//
 	(
 	~ardPulseResponder.remove;
 	~ardPulseResponder = OSCresponderNode(nil,'/ardpulse', {|t,r,msg|
@@ -597,18 +539,12 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 	}).add;
 	);
 
-
-
-	//
 	// Ben Smear Parameter
-	//
 	~smearResponder.remove;
 	~smearResponder = OSCresponderNode(nil, '/ben/smear', {|t, r, msg|
 		if (((msg[1] <= 1) && (msg[1] >= 0)), ~localAddress.sendMsg("/coherence",msg[1]));
 		//("bensmear ").postln;
 	}).add;
-
-
 
 	~coherenceResponder.remove;
 	~coherenceResponder = OSCresponderNode(nil, '/coherence', {|t, r, msg|
@@ -668,12 +604,7 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 		//("External OSC		Set Level =" + msg[1]).postln;
 	}).add;
 
-
-
-
-	//
 	//	Load MIDI.
-	//
 	thisProcess.interpreter.executeFile(~mainPath ++ "midiStrikeCounter.scd");
 	thisProcess.interpreter.executeFile(~mainPath ++ "midiVelocityCounter.scd");
 	thisProcess.interpreter.executeFile(~mainPath ++ "lmtdMIDI.scd");
@@ -681,10 +612,6 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 
 );
 
-//
 //	Load GUI.
-//
 thisProcess.interpreter.executeFile(~mainPath ++ "lmtdGUI.scd");
-
-
 });
