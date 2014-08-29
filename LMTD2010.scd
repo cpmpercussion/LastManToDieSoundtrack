@@ -149,11 +149,11 @@ thisProcess.interpreter.executeFile(~mainPath ++ "loadSounds.scd");
 	("LMTD	Starting Sounds...").postln;
 
 	// Pbinds for Field recordings.
-	~fields1= Pbindef(\fields1, \instrument, \bindEnv, \bufnum, ~rField, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5* ~rel, \dur, 20 * ~dur4, \amp, 0.5 * ~masterLevelBus.asMap, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
-	~fields2= Pbindef(\fields2, \instrument, \bindEnv, \bufnum, ~rField, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5*  ~rel, \dur, 20 * ~dur3, \amp, 0.5 * ~masterLevelBus.asMap, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
+	~fields1= Pbindef(\fields1, \instrument, \bindEnv, \bufnum, ~rField, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5* ~rel, \dur, 20 * ~dur4, \amp, 0.4 * ~masterLevelBus.asMap, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
+	~fields2= Pbindef(\fields2, \instrument, \bindEnv, \bufnum, ~rField, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5*  ~rel, \dur, 20 * ~dur3, \amp, 0.4 * ~masterLevelBus.asMap, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
 	// Auto improvise pBinds
-	~marImp1= Pbindef(\marimbaImprov1, \instrument, \bindEnv, \bufnum, ~rMarImprov, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5* ~rel, \dur, 20 * ~dur4, \amp, 0.5 * 1, \bufrate, 1, \pan,~pans, \out, 0);
-	~marImp2= Pbindef(\marimbaImprov2, \instrument, \bindEnv, \bufnum, ~rMarImprov, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5*  ~rel, \dur, 20 * ~dur3, \amp, 0.5 * 1, \bufrate, 1, \pan,~pans, \out, 0);
+	~marImp1= Pbindef(\marimbaImprov1, \instrument, \bindEnv, \bufnum, ~rMarImprov, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5* ~rel, \dur, 20 * ~dur4, \amp, ~masterLevelLow, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
+	~marImp2= Pbindef(\marimbaImprov2, \instrument, \bindEnv, \bufnum, ~rMarImprov, \startpos, ~starts2, \sus, 30 * ~starts, \release, 5*  ~rel, \dur, 20 * ~dur3, \amp, ~masterLevelLow, \bufrate, 1, \pan,~pans, \out, ~backgroundOutput);
 
 	// Adjust field recording parameters
 	~fieldParams = {
